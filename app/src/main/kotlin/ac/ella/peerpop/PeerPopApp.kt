@@ -9,7 +9,7 @@ class PeerPopApp : Application() {
     override fun onCreate() {
         super.onCreate()
         PeerPopApp = this
-        Log.d("YTApp", "YTApp onCreate")
+        Log.d("PeerPopApp", "PeerPopApp onCreate")
     }
 
     companion object {
