@@ -19,7 +19,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             PodciniProviderTheme {
                 Box(modifier = Modifier.background(Color.Black).fillMaxSize(), contentAlignment = Alignment.Center) {
-                    Text("PeerPop Installed", color = Color.Red)
+                    Text("PeerPop Installed", color = Color.Green)
                 }
             }
         }

@@ -3,26 +3,24 @@ package ac.ella.peerpop
 import android.app.Application
 import android.content.Context
 import android.content.Intent
-import android.util.Log
 
 class PeerPopApp : Application() {
     override fun onCreate() {
         super.onCreate()
-        PeerPopApp = this
-        Log.d("PeerPopApp", "PeerPopApp onCreate")
+        peerPopApp = this
     }
 
     companion object {
-        private lateinit var PeerPopApp: PeerPopApp
+        private lateinit var peerPopApp: PeerPopApp
 
-        fun getApp(): PeerPopApp = PeerPopApp
+        fun getApp(): PeerPopApp = peerPopApp
 
-        fun getAppContext(): Context = PeerPopApp.applicationContext
+        fun getAppContext(): Context = peerPopApp.applicationContext
 
         fun forceRestart() {
-            val intent = Intent(PeerPopApp, MainActivity::class.java)
+            val intent = Intent(peerPopApp, MainActivity::class.java)
             val mainIntent = Intent.makeRestartActivityTask(intent.component)
-            PeerPopApp.startActivity(mainIntent)
+            peerPopApp.startActivity(mainIntent)
             Runtime.getRuntime().exit(0)
         }
     }

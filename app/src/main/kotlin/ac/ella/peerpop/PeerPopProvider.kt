@@ -7,10 +7,10 @@ import ac.mdiq.podcini.shared.VideoSpec
 import ac.mdiq.podcini.shared.prepareUrl
 import ac.mdiq.podcini.sources.Provider
 import ac.roma.npeconnector.FeedBuilder
-import ac.roma.npeconnector.FeedBuilder.Companion.episodeFrom
 import ac.roma.npeconnector.InfoCache
 import ac.roma.npeconnector.getSortedVStreams
 import ac.roma.npeconnector.toAudioSpec
+import ac.roma.npeconnector.toEpisodeIPC
 import android.service.autofill.UserData
 import android.util.Log
 import io.ktor.http.Url
@@ -69,8 +69,7 @@ class PeerPopProvider : Provider.Stub() {
     }
 
     override fun buildEpisode(url: String): EpisodeIPC? {
-        val info = StreamInfo.getInfo(npService, url)
-        return if (info == null) null else episodeFrom(info)
+        return StreamInfo.getInfo(npService, url)?.toEpisodeIPC()
     }
 
     override fun getEpisodeDescription(url: String): String? {
@@ -169,28 +168,8 @@ class PeerPopProvider : Provider.Stub() {
             }
             else -> {
                 // channel tabs other than videos
-                val uURL = Url(url)
-                val pathSegments = uURL.encodedPath.split("/")
-                val channelUrl = "https://www.youtube.com/channel/${pathSegments[1]}"
-                val channelInfo = ChannelInfo.getInfo(npService, channelUrl)
-                fb = FeedBuilder(FEEDTYPE, channelUrl, npService)
-                fb?.channelInfo = channelInfo
-                if (channelInfo?.tabs.isNullOrEmpty()) return null
-                var index = -1
-                var urlEnd = ""
-                for (i in channelInfo.tabs.indices) {
-                    urlEnd = Url(channelInfo.tabs[i].url).encodedPath.split("/").last()
-                    val url_ = prepareUrl(channelInfo.tabs[i].url)
-                    if (url == url_) {
-                        index = i
-                        break
-                    }
-                }
-                if (index < 0) return null
-                runBlocking(Dispatchers.IO) {
-                    feed_ = fb?.feedFromChannel(index, "")
-                    if (feed_ != null && urlEnd.isNotBlank()) feed_.title = "${feed_.title}: $urlEnd"
-                }
+                // TODO: is this needed
+                feed_ = null
             }
         }
         feed_?.id = 0L

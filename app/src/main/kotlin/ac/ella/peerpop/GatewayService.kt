@@ -5,6 +5,7 @@ import ac.mdiq.podcini.shared.PROVIDER_API_VERSION
 import ac.mdiq.podcini.shared.ProviderAttrs
 import ac.mdiq.podcini.shared.ShareType
 import ac.mdiq.podcini.sources.IFeedSearchProvider
+import ac.mdiq.podcini.sources.IMediaSearchProvider
 import ac.mdiq.podcini.sources.IPodciniGateway
 import ac.mdiq.podcini.sources.Provider
 import ac.roma.npeconnector.DownloaderImpl
@@ -14,10 +15,10 @@ import ac.roma.npeconnector.FeedSearcher
 import ac.roma.npeconnector.InfoCache
 import ac.roma.npeconnector.Localization.Companion.getPreferredContentCountry
 import ac.roma.npeconnector.Localization.Companion.getPreferredLocalization
+import ac.roma.npeconnector.MediaSearcher
 import android.app.Service
 import android.content.Intent
 import android.os.IBinder
-import android.util.Log
 import org.schabi.newpipe.extractor.NewPipe
 import org.schabi.newpipe.extractor.ServiceList
 import kotlin.collections.set
@@ -25,6 +26,7 @@ import kotlin.collections.set
 class GatewayService : Service() {
     private val providerBinder = PeerPopProvider()
     private val searchProviderBinder = FeedSearcher("PeerPop", 3)
+    private val mediaSearcherBinder = MediaSearcher("PeerPop", 3)
     private val gatewayBinder = object : IPodciniGateway.Stub() {
         override fun getAttributes(): ProviderAttrs {
             return ProviderAttrs(
@@ -39,21 +41,19 @@ class GatewayService : Service() {
                 shareLogType = ShareType.PeerTubeMedia.name
             )
         }
-
         override fun getSearchProvider(): IFeedSearchProvider {
             return searchProviderBinder
         }
-
+        override fun getMediaSearcher(): IMediaSearchProvider {
+            return mediaSearcherBinder
+        }
         override fun getProvider(): Provider {
             return providerBinder
         }
     }
 
     override fun onCreate() {
-        Log.e("GatewayService", "onCreate")
         init()
-        Log.e("GatewayService", "searchProviderBinder=$searchProviderBinder")
-        Log.e("GatewayService", "providerBinder=$providerBinder")
     }
 
     private fun init() {
@@ -67,11 +67,9 @@ class GatewayService : Service() {
                 //                not doing anything now
             }
         }
-//        YoutubeStreamExtractor.setPoTokenProvider(PoTokenProviderImpl)
     }
 
     override fun onBind(intent: Intent): IBinder? {
-        Log.d("GatewayService", "onBind: ${intent.action}")
         return gatewayBinder
     }
 }

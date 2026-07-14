@@ -1,0 +1,2 @@
+* PodciniLib upped to 1.1.1, NPEConnector upped to 1.1.2
+* supports media and playlist searches
