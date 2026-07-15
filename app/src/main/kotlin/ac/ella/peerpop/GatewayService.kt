@@ -3,7 +3,6 @@ package ac.ella.peerpop
 import ac.ella.peerpop.PeerPopProvider.Companion.FEEDTYPE
 import ac.mdiq.podcini.shared.PROVIDER_API_VERSION
 import ac.mdiq.podcini.shared.ProviderAttrs
-import ac.mdiq.podcini.shared.ShareType
 import ac.mdiq.podcini.sources.IFeedSearchProvider
 import ac.mdiq.podcini.sources.IMediaSearchProvider
 import ac.mdiq.podcini.sources.IPodciniGateway
@@ -33,12 +32,12 @@ class GatewayService : Service() {
                 name = "PeerPop",
                 apiVersion = PROVIDER_API_VERSION,
                 feedType = FEEDTYPE,
+                hasVideo = true,
                 hasMultiQualities = true,
                 hasSeparateAVs = false,
-                supportDonwload = false,
+                supportDownload = false,
                 hasViewCount = true,
-                hasLikeCount = true,
-                shareLogType = ShareType.PeerTubeMedia.name
+                hasLikeCount = true
             )
         }
         override fun getSearchProvider(): IFeedSearchProvider {

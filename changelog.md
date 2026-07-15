@@ -1,3 +1,8 @@
+# 1.1.2
+
+* PodciniLib upped to 1.1.2
+* gradle upped to 9.6.1, AGP upped to 9.3.0
+
 # 1.1.1
 
 * removed unnecessary youtube reference
