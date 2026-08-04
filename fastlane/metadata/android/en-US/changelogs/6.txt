@@ -1,0 +1,2 @@
+* stripped off torrent and fragmented streams
+* AGP upped to 9.3.1, upped some dependencies

@@ -4,12 +4,10 @@ import ac.mdiq.podcini.shared.AudioSpec
 import ac.mdiq.podcini.shared.EpisodeIPC
 import ac.mdiq.podcini.shared.FeedIPC
 import ac.mdiq.podcini.shared.VideoSpec
-import ac.mdiq.podcini.shared.prepareUrl
 import ac.mdiq.podcini.sources.Provider
 import ac.roma.npeconnector.FeedBuilder
 import ac.roma.npeconnector.InfoCache
 import ac.roma.npeconnector.getSortedVStreams
-import ac.roma.npeconnector.toAudioSpec
 import ac.roma.npeconnector.toEpisodeIPC
 import android.service.autofill.UserData
 import android.util.Log
@@ -21,7 +19,6 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
-import org.schabi.newpipe.extractor.MediaFormat
 import org.schabi.newpipe.extractor.NewPipe
 import org.schabi.newpipe.extractor.channel.ChannelInfo
 import org.schabi.newpipe.extractor.stream.DeliveryMethod
@@ -77,25 +74,17 @@ class PeerPopProvider : Provider.Stub() {
     }
 
     override fun getAudioSpecs(media: EpisodeIPC): List<AudioSpec> {
-        var sSpecs = listOf<AudioSpec>()
-        val audioStreams = getStreamInfo(media.downloadUrl)?.audioStreams
-        if (audioStreams != null) {
-            val collectedStreams = mutableSetOf<AudioSpec>()
-            for (stream in audioStreams) {
-                if (stream == null || stream.deliveryMethod == DeliveryMethod.TORRENT || (stream.deliveryMethod == DeliveryMethod.HLS && stream.format == MediaFormat.OPUS)) continue
-                collectedStreams.add(stream.toAudioSpec())
-            }
-            sSpecs = collectedStreams.toList().sortedWith(compareBy { it.bitrate })
-        }
-        return sSpecs
+        return listOf()
     }
 
     override fun getVideoOnlySpecs(media: EpisodeIPC): List<VideoSpec> {
-        return getSortedVStreams(listOf(), getStreamInfo(media.downloadUrl)?.videoOnlyStreams, ascendingOrder = true, preferVideoOnlyStreams = true)
+        return listOf()
     }
 
     override fun getVideoSpecs(media: EpisodeIPC): List<VideoSpec> {
-        return getSortedVStreams(getStreamInfo(media.downloadUrl)?.videoStreams, listOf(), ascendingOrder = true, preferVideoOnlyStreams = false)
+        val vStreams = getStreamInfo(media.downloadUrl)?.videoStreams?.filter { it != null && it.deliveryMethod != DeliveryMethod.TORRENT && !it.content.contains("fragmented") }
+        if (!vStreams.isNullOrEmpty()) return getSortedVStreams(vStreams.toList(), listOf(), ascendingOrder = true, preferVideoOnlyStreams = false)
+        return listOf()
     }
 
     internal fun getStreamInfo(url: String?, forceLoad: Boolean = false): StreamInfo? {

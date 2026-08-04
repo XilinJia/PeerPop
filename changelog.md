@@ -1,3 +1,8 @@
+# 1.1.3
+
+* stripped off torrent and fragmented streams
+* AGP upped to 9.3.1, upped some dependencies
+
 # 1.1.2
 
 * PodciniLib upped to 1.1.2
