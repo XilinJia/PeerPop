@@ -1,6 +1,7 @@
 package ac.ella.peerpop
 
 import ac.mdiq.podcini.shared.AudioSpec
+import ac.mdiq.podcini.shared.CaptionSpec
 import ac.mdiq.podcini.shared.EpisodeIPC
 import ac.mdiq.podcini.shared.FeedIPC
 import ac.mdiq.podcini.shared.VideoSpec
@@ -71,6 +72,10 @@ class PeerPopProvider : Provider.Stub() {
 
     override fun getEpisodeDescription(url: String): String? {
         return getStreamInfo(url)?.description?.content
+    }
+
+    override fun getCaptionSpecs(media: EpisodeIPC): List<CaptionSpec> {
+        return listOf()
     }
 
     override fun getAudioSpecs(media: EpisodeIPC): List<AudioSpec> {
