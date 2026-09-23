@@ -18,8 +18,8 @@ android {
         applicationId = "ac.ella.peerpop"
         minSdk = 26
         targetSdk = 37
-        versionCode = 8
-        versionName = "1.1.5"
+        versionCode = 9
+        versionName = "1.1.6"
     }
 
 //      sourceSets {
@@ -115,8 +115,8 @@ dependencies {
     implementation(libs.ktor.client.okhttp)
     implementation(libs.ktor.utils)
 
-   implementation("com.github.XilinJia:PodciniLib:1.1.4")
-   implementation("com.github.XilinJia:NPEConnector:1.1.6")
+   implementation("com.github.XilinJia:PodciniLib:1.1.5")
+   implementation("com.github.XilinJia:NPEConnector:1.1.7")
 
     coreLibraryDesugaring("com.android.tools:desugar_jdk_libs_nio:2.1.5")
     implementation("com.github.teamnewpipe:NewPipeExtractor:v0.26.5")
