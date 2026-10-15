@@ -1,3 +1,8 @@
+# 1.1.8
+
+* enable multiple quality support
+* catch dependency exception
+
 # 1.1.7
 
 * PodciniLib upped to 1.1.6, NPEConnector upped to 1.1.8

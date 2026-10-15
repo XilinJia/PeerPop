@@ -1,0 +1,2 @@
+* enable multiple quality support
+* catch dependency exception

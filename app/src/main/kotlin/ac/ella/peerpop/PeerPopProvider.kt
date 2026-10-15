@@ -12,6 +12,7 @@ import ac.mdiq.podcini.sources.Provider
 import ac.roma.npeconnector.FeedBuilder
 import ac.roma.npeconnector.InfoCache
 import ac.roma.npeconnector.getSortedVStreams
+import ac.roma.npeconnector.toAudioSpec
 import ac.roma.npeconnector.toEpisodeIPC
 import android.util.Log
 import io.ktor.http.Url
@@ -20,6 +21,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.runBlocking
+import org.schabi.newpipe.extractor.MediaFormat
 import org.schabi.newpipe.extractor.NewPipe
 import org.schabi.newpipe.extractor.channel.ChannelInfo
 import org.schabi.newpipe.extractor.stream.DeliveryMethod
@@ -60,8 +62,18 @@ class PeerPopProvider : Provider.Stub() {
     override fun getMediaSpecs(media: EpisodeIPC, force: Boolean): MediaSpecs {
         val mediaSpecs = MediaSpecs()
         val streamInfo = getStreamInfo(media.downloadUrl, force) ?: return mediaSpecs
-        val aSpecs = listOf<AudioSpec>()
-        val vSpecs = listOf<VideoSpec>()
+        var aSpecs = listOf<AudioSpec>()
+        val audioStreams = streamInfo.audioStreams
+        if (audioStreams != null) {
+            val collectedStreams = mutableSetOf<AudioSpec>()
+            for (stream in audioStreams) {
+                //                Log.d(TAG, "getFilteredAStreams stream: ${stream.audioTrackId} ${stream.bitrate} ${stream.deliveryMethod} ${stream.format}")
+                if (stream == null || stream.deliveryMethod == DeliveryMethod.TORRENT || (stream.deliveryMethod == DeliveryMethod.HLS && stream.format == MediaFormat.OPUS)) continue
+                collectedStreams.add(stream.toAudioSpec())
+            }
+            aSpecs = collectedStreams.toList().sortedWith(compareBy { it.bitrate })
+        }
+        val vSpecs = getSortedVStreams(listOf(), streamInfo.videoOnlyStreams, ascendingOrder = true, preferVideoOnlyStreams = true)
         val mSpecs = getSortedVStreams(streamInfo.videoStreams?.filter { it != null && it.deliveryMethod != DeliveryMethod.TORRENT && !it.content.contains("fragmented") }, listOf(), ascendingOrder = true, preferVideoOnlyStreams = false)
         mediaSpecs.audioSpecs = aSpecs
         mediaSpecs.videoSpecs = vSpecs
@@ -74,10 +86,10 @@ class PeerPopProvider : Provider.Stub() {
         val cacheType = InfoCache.Type.STREAM
         return if (forceLoad) {
             CACHE.removeInfo(serviceId, url, cacheType)
-            StreamInfo.getInfo(npService, url).also { info -> CACHE.putInfo(serviceId, url, info, cacheType) }
+            try { StreamInfo.getInfo(npService, url).also { info -> CACHE.putInfo(serviceId, url, info, cacheType) } } catch (e: Exception) { null}
         } else {
             val cachedData = CACHE.getFromKey(serviceId, url, cacheType) as? StreamInfo
-            cachedData ?: StreamInfo.getInfo(npService, url).also { info -> CACHE.putInfo(serviceId, url, info, cacheType) }
+            cachedData ?: try { StreamInfo.getInfo(npService, url).also { info -> CACHE.putInfo(serviceId, url, info, cacheType) } } catch (e: Exception) { null}
         }
     }
 
